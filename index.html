@@ -2,6 +2,10 @@
 <html>
 <head>
 <title>Car Pro Game</title>
+
+<!-- Rotate support -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body { margin:0; background:green; overflow:hidden; }
 
@@ -36,13 +40,14 @@ body { margin:0; background:green; overflow:hidden; }
     font-size:40px;
 }
 
-#score {
+#score, #level {
     position:absolute;
-    top:10px;
     left:10px;
     color:white;
-    font-size:18px;
 }
+
+#score { top:10px; }
+#level { top:35px; }
 
 /* Controls */
 .controls {
@@ -67,6 +72,7 @@ button {
 <div id="road">
     <div id="player">🚗</div>
     <div id="score">Score: 0</div>
+    <div id="level">Level: 1</div>
 </div>
 
 <div class="controls">
@@ -77,16 +83,18 @@ button {
 <script>
 let player = document.getElementById("player");
 let road = document.getElementById("road");
+
 let score = 0;
+let level = 1;
 let speed = 5;
 
-/* Background music */
+/* Music */
 let bgMusic = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
 bgMusic.loop = true;
 bgMusic.volume = 0.2;
 bgMusic.play();
 
-/* Road lines create */
+/* Road lines */
 for(let i=0;i<5;i++){
     let line = document.createElement("div");
     line.className = "line";
@@ -94,7 +102,6 @@ for(let i=0;i<5;i++){
     road.appendChild(line);
 }
 
-/* Move lines */
 function moveLines(){
     document.querySelectorAll(".line").forEach(line=>{
         line.style.top = line.offsetTop + speed + "px";
@@ -134,10 +141,17 @@ function createEnemy(){
             enemy.remove();
             clearInterval(move);
             score++;
+
             document.getElementById("score").innerText = "Score: " + score;
+
+            /* Level system */
+            if(score % 5 == 0){
+                level++;
+                speed += 1;
+                document.getElementById("level").innerText = "Level: " + level;
+            }
         }
 
-        /* Collision */
         if(
             enemy.offsetTop > player.offsetTop - 40 &&
             enemy.offsetLeft < player.offsetLeft + 40 &&
@@ -151,11 +165,11 @@ function createEnemy(){
 
 function crash(){
     bgMusic.pause();
-    alert("💥 Crash! Score: " + score);
+    alert("💥 Crash! Score: " + score + " Level: " + level);
     location.reload();
 }
 
-/* Game loop */
+/* Loop */
 function gameLoop(){
     moveLines();
     requestAnimationFrame(gameLoop);
