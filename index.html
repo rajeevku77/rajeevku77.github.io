@@ -1,191 +1,97 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Flappy Pro Game</title>
+<title>Car Game</title>
 <style>
 body {
     margin:0;
     overflow:hidden;
-    background: linear-gradient(#70c5ce, #ffffff);
-    font-family:Arial;
+    background:gray;
 }
-#game {
-    position:relative;
-    width:100%;
+#road {
+    width:300px;
     height:100vh;
+    background:#333;
+    margin:auto;
+    position:relative;
 }
 #player {
     position:absolute;
-    top:200px;
-    left:60px;
-    font-size:45px;
-    transition: transform 0.1s;
+    bottom:20px;
+    left:120px;
+    font-size:40px;
 }
-.pipe {
+.enemy {
     position:absolute;
-    width:70px;
-    background:linear-gradient(green, darkgreen);
-    border-radius:10px;
+    top:0;
+    font-size:40px;
 }
-#score, #highScore {
+#score {
     position:absolute;
+    top:10px;
     left:10px;
-    font-size:20px;
-    color:black;
-}
-#score { top:10px; }
-#highScore { top:35px; }
-
-#startBtn {
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    padding:15px 30px;
-    font-size:20px;
-}
-
-#gameOverBox {
-    display:none;
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    text-align:center;
+    color:white;
 }
 </style>
 </head>
 
 <body>
 
-<div id="game">
-    <div id="player">🐦</div>
+<div id="road">
+    <div id="player">🚗</div>
     <div id="score">Score: 0</div>
-    <div id="highScore">High: 0</div>
-
-    <button id="startBtn">Start Game</button>
-
-    <div id="gameOverBox">
-        <h2>💀 Game Over</h2>
-        <p id="finalScore"></p>
-        <button onclick="restart()">Restart</button>
-    </div>
 </div>
 
-<script>function playSound(){
-    let audio = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
-    audio.play();
-}
+<script>
 let player = document.getElementById("player");
-let scoreText = document.getElementById("score");
-let highScoreText = document.getElementById("highScore");
-let startBtn = document.getElementById("startBtn");
-let gameOverBox = document.getElementById("gameOverBox");
-let finalScore = document.getElementById("finalScore");
-
-let y = 200;
-let velocity = 0;
-let gravity = 1.5;
+let road = document.getElementById("road");
 let score = 0;
-let gameRunning = false;
+let speed = 5;
 
-let highScore = localStorage.getItem("highScore") || 0;
-highScoreText.innerText = "High: " + highScore;
+document.addEventListener("touchmove", e=>{
+    let x = e.touches[0].clientX;
+    player.style.left = (x - road.offsetLeft - 20) + "px";
+});
 
-function jump(){
-    if(gameRunning){
-        velocity = -10;
-        playSound();//
+document.addEventListener("keydown", e=>{
+    if(e.key == "ArrowLeft"){
+        player.style.left = player.offsetLeft - 20 + "px";
     }
-}
-document.body.onclick = jump;
+    if(e.key == "ArrowRight"){
+        player.style.left = player.offsetLeft + 20 + "px";
+    }
+});
 
-startBtn.onclick = () => {
-    gameRunning = true;
-    startBtn.style.display = "none";
-};
-
-function createPipe(){
-    if(!gameRunning) return;
-
-    let pipeTop = document.createElement("div");
-    let pipeBottom = document.createElement("div");
-
-    let gap = 170;
-    let height = Math.random()*300;
-
-    pipeTop.className = "pipe";
-    pipeBottom.className = "pipe";
-
-    pipeTop.style.height = height+"px";
-    pipeTop.style.top = "0";
-
-    pipeBottom.style.height = (window.innerHeight-height-gap)+"px";
-    pipeBottom.style.bottom = "0";
-
-    document.getElementById("game").appendChild(pipeTop);
-    document.getElementById("game").appendChild(pipeBottom);
-
-    let x = window.innerWidth;
+function createEnemy(){
+    let enemy = document.createElement("div");
+    enemy.innerText = "🚙";
+    enemy.className = "enemy";
+    enemy.style.left = Math.random()*250 + "px";
+    road.appendChild(enemy);
 
     let move = setInterval(()=>{
-        x -= 4;
-        pipeTop.style.left = x+"px";
-        pipeBottom.style.left = x+"px";
+        enemy.style.top = enemy.offsetTop + speed + "px";
 
-        if(x < -70){
-            pipeTop.remove();
-            pipeBottom.remove();
+        if(enemy.offsetTop > window.innerHeight){
+            enemy.remove();
             clearInterval(move);
             score++;
-            scoreText.innerText = "Score: " + score;
+            document.getElementById("score").innerText = "Score: " + score;
         }
 
-        if(x < 110 && x > 50){
-            if(y < height || y > height+gap){
-                gameOver();
-            }
+        if(
+            enemy.offsetTop > player.offsetTop - 40 &&
+            enemy.offsetLeft < player.offsetLeft + 40 &&
+            enemy.offsetLeft + 40 > player.offsetLeft
+        ){
+            alert("💥 Game Over! Score: " + score);
+            location.reload();
         }
 
-    },20);
+    },30);
 }
 
-setInterval(createPipe,2000);
-
-function gameLoop(){
-    if(!gameRunning) return requestAnimationFrame(gameLoop);
-
-    velocity += gravity;
-    y += velocity;
-
-    if(y < 0) y = 0;
-    if(y > window.innerHeight-50){
-        gameOver();
-    }
-
-    player.style.top = y+"px";
-
-    requestAnimationFrame(gameLoop);
-}
-
-function gameOver(){
-    gameRunning = false;
-    finalScore.innerText = "Score: " + score;
-    gameOverBox.style.display = "block";
-
-    if(score > highScore){
-        localStorage.setItem("highScore", score);
-    }
-}
-
-function restart(){
-    location.reload();
-}
-
-gameLoop();
+setInterval(createEnemy,1500);
 </script>
 
 </body>
