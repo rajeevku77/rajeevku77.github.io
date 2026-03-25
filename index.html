@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Car Game</title>
+<title>Car Pro Game</title>
 <style>
 body { margin:0; background:green; overflow:hidden; }
 
@@ -12,6 +12,15 @@ body { margin:0; background:green; overflow:hidden; }
     margin:auto;
     position:relative;
     overflow:hidden;
+}
+
+/* Road lines */
+.line {
+    position:absolute;
+    width:10px;
+    height:80px;
+    background:white;
+    left:145px;
 }
 
 #player {
@@ -32,8 +41,10 @@ body { margin:0; background:green; overflow:hidden; }
     top:10px;
     left:10px;
     color:white;
+    font-size:18px;
 }
 
+/* Controls */
 .controls {
     position:fixed;
     bottom:20px;
@@ -43,9 +54,10 @@ body { margin:0; background:green; overflow:hidden; }
 }
 
 button {
-    width:80px;
-    height:50px;
-    font-size:20px;
+    width:120px;
+    height:70px;
+    font-size:25px;
+    border-radius:10px;
 }
 </style>
 </head>
@@ -68,6 +80,31 @@ let road = document.getElementById("road");
 let score = 0;
 let speed = 5;
 
+/* Background music */
+let bgMusic = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+bgMusic.loop = true;
+bgMusic.volume = 0.2;
+bgMusic.play();
+
+/* Road lines create */
+for(let i=0;i<5;i++){
+    let line = document.createElement("div");
+    line.className = "line";
+    line.style.top = (i*150) + "px";
+    road.appendChild(line);
+}
+
+/* Move lines */
+function moveLines(){
+    document.querySelectorAll(".line").forEach(line=>{
+        line.style.top = line.offsetTop + speed + "px";
+        if(line.offsetTop > window.innerHeight){
+            line.style.top = "-100px";
+        }
+    });
+}
+
+/* Controls */
 function moveLeft(){
     let left = player.offsetLeft - 30;
     if(left > 0){
@@ -82,6 +119,7 @@ function moveRight(){
     }
 }
 
+/* Enemy */
 function createEnemy(){
     let enemy = document.createElement("div");
     enemy.innerText = "🚙";
@@ -99,19 +137,32 @@ function createEnemy(){
             document.getElementById("score").innerText = "Score: " + score;
         }
 
+        /* Collision */
         if(
             enemy.offsetTop > player.offsetTop - 40 &&
             enemy.offsetLeft < player.offsetLeft + 40 &&
             enemy.offsetLeft + 40 > player.offsetLeft
         ){
-            alert("💥 Game Over! Score: " + score);
-            location.reload();
+            crash();
         }
 
     },30);
 }
 
+function crash(){
+    bgMusic.pause();
+    alert("💥 Crash! Score: " + score);
+    location.reload();
+}
+
+/* Game loop */
+function gameLoop(){
+    moveLines();
+    requestAnimationFrame(gameLoop);
+}
+
 setInterval(createEnemy,1500);
+gameLoop();
 </script>
 
 </body>
