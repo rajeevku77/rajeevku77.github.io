@@ -3,35 +3,61 @@
 <head>
 <title>Guess Game</title>
 <style>
-body { text-align:center; font-family:Arial; background:#f2f2f2; }
-button { padding:10px; margin:5px; font-size:16px; }
-input { padding:8px; }
+body {
+    text-align:center;
+    font-family:Arial;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    color:white;
+}
+.game-box {
+    background:white;
+    color:black;
+    margin:50px auto;
+    padding:20px;
+    width:300px;
+    border-radius:15px;
+    box-shadow:0 0 15px rgba(0,0,0,0.3);
+}
+button {
+    padding:10px;
+    margin:5px;
+    font-size:16px;
+    border:none;
+    border-radius:8px;
+    background:green;
+    color:white;
+}
+input {
+    padding:8px;
+    width:80%;
+}
 </style>
 </head>
 
 <body>
 
-<h1>🎮 Guess the Number (1–10)</h1>
+<h1>🎮 Guess The Number Game</h1>
 
-<input type="number" id="guess" placeholder="Enter number">
-<br><br>
+<div class="game-box">
+
+<p>Guess number between 1 to 10</p>
+
+<input type="number" id="guess"><br><br>
+
 <button onclick="check()">Check</button>
+<button onclick="restart()">Restart</button>
 
 <h2 id="result"></h2>
+<h3>Score: <span id="score">0</span></h3>
+
+</div>
 
 <script>
 let number = Math.floor(Math.random()*10)+1;
+let score = 0;
 
 function check(){
     let user = document.getElementById("guess").value;
 
     if(user == number){
-        document.getElementById("result").innerText = "🎉 Correct!";
-    } else {
-        document.getElementById("result").innerText = "❌ Wrong! Try again";
-    }
-}
-</script>
-
-</body>
-</html>
+        document.getElementById("result").
