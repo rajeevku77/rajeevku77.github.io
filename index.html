@@ -97,9 +97,8 @@ highScoreText.innerText = "High: " + highScore;
 
 function jump(){
     if(gameRunning){
-        velocity = -12;
-        player.style.transform = "rotate(-20deg)";
-        setTimeout(()=>player.style.transform="rotate(20deg)",100);
+        velocity = -10;
+        playSound();//
     }
 }
 document.body.onclick = jump;
