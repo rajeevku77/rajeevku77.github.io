@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Mini Game</title>
+<title>Flappy Game</title>
 <style>
 body {
     margin:0;
     overflow:hidden;
     background:#70c5ce;
+    font-family:Arial;
 }
 #game {
     position:relative;
@@ -14,102 +15,142 @@ body {
     height:100vh;
 }
 #player {
-    width:40px;
-    height:40px;
-    background:red;
+    position:absolute;
+    top:200px;
+    left:50px;
+    font-size:40px;
+}
+.pipe {
+    position:absolute;
+    width:60px;
+    background:green;
+}
+#score {
+    position:absolute;
+    top:10px;
+    left:10px;
+    font-size:25px;
+    color:white;
+}
+#startBtn {
     position:absolute;
     top:50%;
-    left:50px;
-}
-.obstacle {
-    width:50px;
-    background:green;
-    position:absolute;
-    right:0;
+    left:50%;
+    transform:translate(-50%,-50%);
+    padding:15px 30px;
+    font-size:20px;
 }
 </style>
 </head>
 
-<body onclick="jump()">
+<body>
 
 <div id="game">
-    <div id="player"></div>
+    <div id="player">🐦</div>
+    <div id="score">Score: 0</div>
+    <button id="startBtn">Start Game</button>
 </div>
 
 <script>
 let player = document.getElementById("player");
 let game = document.getElementById("game");
+let scoreText = document.getElementById("score");
+let startBtn = document.getElementById("startBtn");
 
 let y = 200;
-let gravity = 2;
 let velocity = 0;
+let gravity = 1.5;
+let gameRunning = false;
 let score = 0;
 
 function jump(){
-    velocity = -15;
+    if(gameRunning){
+        velocity = -12;
+        beep();
+    }
 }
 
-function createObstacle(){
-    let obstacleTop = document.createElement("div");
-    let obstacleBottom = document.createElement("div");
+document.body.onclick = jump;
 
-    let gap = 150;
+startBtn.onclick = () => {
+    gameRunning = true;
+    startBtn.style.display = "none";
+};
+
+function beep(){
+    let audio = new AudioContext();
+    let osc = audio.createOscillator();
+    osc.connect(audio.destination);
+    osc.start();
+    setTimeout(()=>osc.stop(),100);
+}
+
+function createPipe(){
+    if(!gameRunning) return;
+
+    let pipeTop = document.createElement("div");
+    let pipeBottom = document.createElement("div");
+
+    let gap = 160;
     let height = Math.random()*300;
 
-    obstacleTop.classList.add("obstacle");
-    obstacleBottom.classList.add("obstacle");
+    pipeTop.classList.add("pipe");
+    pipeBottom.classList.add("pipe");
 
-    obstacleTop.style.height = height + "px";
-    obstacleTop.style.top = "0px";
+    pipeTop.style.height = height + "px";
+    pipeTop.style.top = "0";
 
-    obstacleBottom.style.height = (window.innerHeight - height - gap) + "px";
-    obstacleBottom.style.bottom = "0px";
+    pipeBottom.style.height = (window.innerHeight - height - gap) + "px";
+    pipeBottom.style.bottom = "0";
 
-    game.appendChild(obstacleTop);
-    game.appendChild(obstacleBottom);
+    game.appendChild(pipeTop);
+    game.appendChild(pipeBottom);
 
     let x = window.innerWidth;
 
     let move = setInterval(()=>{
-        x -= 5;
-        obstacleTop.style.right = (window.innerWidth - x) + "px";
-        obstacleBottom.style.right = (window.innerWidth - x) + "px";
+        x -= 4;
+        pipeTop.style.left = x + "px";
+        pipeBottom.style.left = x + "px";
 
-        if(x < -50){
-            obstacleTop.remove();
-            obstacleBottom.remove();
+        if(x < -60){
+            pipeTop.remove();
+            pipeBottom.remove();
             clearInterval(move);
             score++;
-            console.log("Score:", score);
+            scoreText.innerText = "Score: " + score;
         }
 
-        // collision
-        if(
-            x < 90 && x > 40 &&
-            (y < height || y > height + gap)
-        ){
-            alert("Game Over! Score: " + score);
-            location.reload();
+        if(x < 100 && x > 40){
+            if(y < height || y > height + gap){
+                gameOver();
+            }
         }
 
-    },30);
+    },20);
 }
 
-setInterval(createObstacle,2000);
+setInterval(createPipe,2000);
 
 function gameLoop(){
+    if(!gameRunning) return requestAnimationFrame(gameLoop);
+
     velocity += gravity;
     y += velocity;
 
     if(y < 0) y = 0;
     if(y > window.innerHeight-40){
-        alert("Game Over! Score: " + score);
-        location.reload();
+        gameOver();
     }
 
     player.style.top = y + "px";
 
     requestAnimationFrame(gameLoop);
+}
+
+function gameOver(){
+    alert("💀 Game Over! Score: " + score);
+    location.reload();
 }
 
 gameLoop();
