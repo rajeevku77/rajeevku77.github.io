@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Flappy Game</title>
+<title>Flappy Pro Game</title>
 <style>
 body {
     margin:0;
     overflow:hidden;
-    background:#70c5ce;
+    background: linear-gradient(#70c5ce, #ffffff);
     font-family:Arial;
 }
 #game {
@@ -17,21 +17,25 @@ body {
 #player {
     position:absolute;
     top:200px;
-    left:50px;
-    font-size:40px;
+    left:60px;
+    font-size:45px;
+    transition: transform 0.1s;
 }
 .pipe {
     position:absolute;
-    width:60px;
-    background:green;
+    width:70px;
+    background:linear-gradient(green, darkgreen);
+    border-radius:10px;
 }
-#score {
+#score, #highScore {
     position:absolute;
-    top:10px;
     left:10px;
-    font-size:25px;
-    color:white;
+    font-size:20px;
+    color:black;
 }
+#score { top:10px; }
+#highScore { top:35px; }
+
 #startBtn {
     position:absolute;
     top:50%;
@@ -39,6 +43,18 @@ body {
     transform:translate(-50%,-50%);
     padding:15px 30px;
     font-size:20px;
+}
+
+#gameOverBox {
+    display:none;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    text-align:center;
 }
 </style>
 </head>
@@ -48,28 +64,41 @@ body {
 <div id="game">
     <div id="player">🐦</div>
     <div id="score">Score: 0</div>
+    <div id="highScore">High: 0</div>
+
     <button id="startBtn">Start Game</button>
+
+    <div id="gameOverBox">
+        <h2>💀 Game Over</h2>
+        <p id="finalScore"></p>
+        <button onclick="restart()">Restart</button>
+    </div>
 </div>
 
 <script>
 let player = document.getElementById("player");
-let game = document.getElementById("game");
 let scoreText = document.getElementById("score");
+let highScoreText = document.getElementById("highScore");
 let startBtn = document.getElementById("startBtn");
+let gameOverBox = document.getElementById("gameOverBox");
+let finalScore = document.getElementById("finalScore");
 
 let y = 200;
 let velocity = 0;
 let gravity = 1.5;
-let gameRunning = false;
 let score = 0;
+let gameRunning = false;
+
+let highScore = localStorage.getItem("highScore") || 0;
+highScoreText.innerText = "High: " + highScore;
 
 function jump(){
     if(gameRunning){
         velocity = -12;
-        beep();
+        player.style.transform = "rotate(-20deg)";
+        setTimeout(()=>player.style.transform="rotate(20deg)",100);
     }
 }
-
 document.body.onclick = jump;
 
 startBtn.onclick = () => {
@@ -77,43 +106,35 @@ startBtn.onclick = () => {
     startBtn.style.display = "none";
 };
 
-function beep(){
-    let audio = new AudioContext();
-    let osc = audio.createOscillator();
-    osc.connect(audio.destination);
-    osc.start();
-    setTimeout(()=>osc.stop(),100);
-}
-
 function createPipe(){
     if(!gameRunning) return;
 
     let pipeTop = document.createElement("div");
     let pipeBottom = document.createElement("div");
 
-    let gap = 160;
+    let gap = 170;
     let height = Math.random()*300;
 
-    pipeTop.classList.add("pipe");
-    pipeBottom.classList.add("pipe");
+    pipeTop.className = "pipe";
+    pipeBottom.className = "pipe";
 
-    pipeTop.style.height = height + "px";
+    pipeTop.style.height = height+"px";
     pipeTop.style.top = "0";
 
-    pipeBottom.style.height = (window.innerHeight - height - gap) + "px";
+    pipeBottom.style.height = (window.innerHeight-height-gap)+"px";
     pipeBottom.style.bottom = "0";
 
-    game.appendChild(pipeTop);
-    game.appendChild(pipeBottom);
+    document.getElementById("game").appendChild(pipeTop);
+    document.getElementById("game").appendChild(pipeBottom);
 
     let x = window.innerWidth;
 
     let move = setInterval(()=>{
         x -= 4;
-        pipeTop.style.left = x + "px";
-        pipeBottom.style.left = x + "px";
+        pipeTop.style.left = x+"px";
+        pipeBottom.style.left = x+"px";
 
-        if(x < -60){
+        if(x < -70){
             pipeTop.remove();
             pipeBottom.remove();
             clearInterval(move);
@@ -121,8 +142,8 @@ function createPipe(){
             scoreText.innerText = "Score: " + score;
         }
 
-        if(x < 100 && x > 40){
-            if(y < height || y > height + gap){
+        if(x < 110 && x > 50){
+            if(y < height || y > height+gap){
                 gameOver();
             }
         }
@@ -139,17 +160,26 @@ function gameLoop(){
     y += velocity;
 
     if(y < 0) y = 0;
-    if(y > window.innerHeight-40){
+    if(y > window.innerHeight-50){
         gameOver();
     }
 
-    player.style.top = y + "px";
+    player.style.top = y+"px";
 
     requestAnimationFrame(gameLoop);
 }
 
 function gameOver(){
-    alert("💀 Game Over! Score: " + score);
+    gameRunning = false;
+    finalScore.innerText = "Score: " + score;
+    gameOverBox.style.display = "block";
+
+    if(score > highScore){
+        localStorage.setItem("highScore", score);
+    }
+}
+
+function restart(){
     location.reload();
 }
 
