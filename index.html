@@ -3,34 +3,49 @@
 <head>
 <title>Car Game</title>
 <style>
-body {
-    margin:0;
-    overflow:hidden;
-    background:gray;
-}
+body { margin:0; background:green; overflow:hidden; }
+
 #road {
     width:300px;
     height:100vh;
     background:#333;
     margin:auto;
     position:relative;
+    overflow:hidden;
 }
+
 #player {
     position:absolute;
     bottom:20px;
     left:120px;
     font-size:40px;
 }
+
 .enemy {
     position:absolute;
     top:0;
     font-size:40px;
 }
+
 #score {
     position:absolute;
     top:10px;
     left:10px;
     color:white;
+}
+
+.controls {
+    position:fixed;
+    bottom:20px;
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+}
+
+button {
+    width:80px;
+    height:50px;
+    font-size:20px;
 }
 </style>
 </head>
@@ -42,25 +57,30 @@ body {
     <div id="score">Score: 0</div>
 </div>
 
+<div class="controls">
+    <button onclick="moveLeft()">⬅️</button>
+    <button onclick="moveRight()">➡️</button>
+</div>
+
 <script>
 let player = document.getElementById("player");
 let road = document.getElementById("road");
 let score = 0;
 let speed = 5;
 
-document.addEventListener("touchmove", e=>{
-    let x = e.touches[0].clientX;
-    player.style.left = (x - road.offsetLeft - 20) + "px";
-});
+function moveLeft(){
+    let left = player.offsetLeft - 30;
+    if(left > 0){
+        player.style.left = left + "px";
+    }
+}
 
-document.addEventListener("keydown", e=>{
-    if(e.key == "ArrowLeft"){
-        player.style.left = player.offsetLeft - 20 + "px";
+function moveRight(){
+    let right = player.offsetLeft + 30;
+    if(right < 260){
+        player.style.left = right + "px";
     }
-    if(e.key == "ArrowRight"){
-        player.style.left = player.offsetLeft + 20 + "px";
-    }
-});
+}
 
 function createEnemy(){
     let enemy = document.createElement("div");
