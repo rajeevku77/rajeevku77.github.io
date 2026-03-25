@@ -1,67 +1,44 @@
-<div class="card">
-  <h2>🔥 Latest Job - SSC GD 2026</h2>
-  <a href="https://ssc.nic.in" target="_blank">
-    <button class="green">Apply</button>
-  </a>
-</div>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>India Job Update</title>
+    <title>Click Game</title>
     <style>
         body {
+            text-align: center;
             font-family: Arial;
             background: #f2f2f2;
-            margin: 0;
         }
-        header {
-            background: #007bff;
+        h1 {
+            background: blue;
             color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 22px;
-        }
-        .card {
-            background: white;
-            margin: 15px;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 0 5px gray;
+            padding: 10px;
         }
         button {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
+            padding: 15px 25px;
+            font-size: 18px;
+            background: green;
             color: white;
+            border: none;
+            border-radius: 10px;
         }
-        .green { background: green; }
-        .blue { background: blue; }
-        .red { background: red; }
     </style>
 </head>
-
 <body>
 
-<header>India Job Update</header>
+<h1>🎮 Click Game</h1>
 
-<div class="card">
-    <a href="https://ssc.nic.in" target="_blank">
-  <button class="green">Apply</button>
-</a>
+<h2>Score: <span id="score">0</span></h2>
 
-<div class="card">
-    <h3>Railway Group D Vacancy</h3>
-    <button class="green">Apply Now</button>
-</div>
+<button onclick="increaseScore()">Click Me</button>
 
-<div class="card">
-    <h3>SSC MTS Admit Card</h3>
-    <button class="blue">Download</button>
-</div>
+<script>
+    let score = 0;
 
-<div class="card">
-    <h3>10th Result 2026</h3>
-    <button class="red">Check Result</button>
-</div>
+    function increaseScore() {
+        score++;
+        document.getElementById("score").innerText = score;
+    }
+</script>
 
 </body>
 </html>
