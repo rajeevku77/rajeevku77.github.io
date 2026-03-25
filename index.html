@@ -1,54 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Click Game</title>
-    <style>
-        body {
-            text-align: center;
-            font-family: Arial;
-            background: #f2f2f2;
-        }
-        h1 {
-            background: blue;
-            color: white;
-            padding: 10px;
-        }
-        button {
-            padding: 15px 25px;
-            font-size: 18px;
-            background: green;
-            color: white;
-            border: none;
-            border-radius: 10px;
-        }
-    </style>
-</head>
-<body>
-
-<h1>🎮 Click Game</h1>
-
-<h2>Score: <span id="score">0</span></h2>
-
-<button onclick="increaseScore()">Click Me</button>
-
-<script>
-    let score = 0;
-
-    function increaseScore() {
-        score++;
-        document.getElementById("score").innerText = score;
-    }
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html>
-<head>
 <title>Guess Game</title>
 <style>
-body { text-align:center; font-family:Arial; }
-button { padding:10px; margin:5px; }
+body { text-align:center; font-family:Arial; background:#f2f2f2; }
+button { padding:10px; margin:5px; font-size:16px; }
+input { padding:8px; }
 </style>
 </head>
 
@@ -56,7 +13,7 @@ button { padding:10px; margin:5px; }
 
 <h1>🎮 Guess the Number (1–10)</h1>
 
-<input type="number" id="guess">
+<input type="number" id="guess" placeholder="Enter number">
 <br><br>
 <button onclick="check()">Check</button>
 
