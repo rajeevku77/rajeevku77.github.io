@@ -75,7 +75,10 @@ body {
     </div>
 </div>
 
-<script>
+<script>function playSound(){
+    let audio = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
+    audio.play();
+}
 let player = document.getElementById("player");
 let scoreText = document.getElementById("score");
 let highScoreText = document.getElementById("highScore");
