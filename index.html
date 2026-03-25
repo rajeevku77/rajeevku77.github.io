@@ -1,63 +1,119 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Guess Game</title>
+<title>Mini Game</title>
 <style>
 body {
-    text-align:center;
-    font-family:Arial;
-    background: linear-gradient(to right, #4facfe, #00f2fe);
-    color:white;
+    margin:0;
+    overflow:hidden;
+    background:#70c5ce;
 }
-.game-box {
-    background:white;
-    color:black;
-    margin:50px auto;
-    padding:20px;
-    width:300px;
-    border-radius:15px;
-    box-shadow:0 0 15px rgba(0,0,0,0.3);
+#game {
+    position:relative;
+    width:100%;
+    height:100vh;
 }
-button {
-    padding:10px;
-    margin:5px;
-    font-size:16px;
-    border:none;
-    border-radius:8px;
+#player {
+    width:40px;
+    height:40px;
+    background:red;
+    position:absolute;
+    top:50%;
+    left:50px;
+}
+.obstacle {
+    width:50px;
     background:green;
-    color:white;
-}
-input {
-    padding:8px;
-    width:80%;
+    position:absolute;
+    right:0;
 }
 </style>
 </head>
 
-<body>
+<body onclick="jump()">
 
-<h1>🎮 Guess The Number Game</h1>
-
-<div class="game-box">
-
-<p>Guess number between 1 to 10</p>
-
-<input type="number" id="guess"><br><br>
-
-<button onclick="check()">Check</button>
-<button onclick="restart()">Restart</button>
-
-<h2 id="result"></h2>
-<h3>Score: <span id="score">0</span></h3>
-
+<div id="game">
+    <div id="player"></div>
 </div>
 
 <script>
-let number = Math.floor(Math.random()*10)+1;
+let player = document.getElementById("player");
+let game = document.getElementById("game");
+
+let y = 200;
+let gravity = 2;
+let velocity = 0;
 let score = 0;
 
-function check(){
-    let user = document.getElementById("guess").value;
+function jump(){
+    velocity = -15;
+}
 
-    if(user == number){
-        document.getElementById("result").
+function createObstacle(){
+    let obstacleTop = document.createElement("div");
+    let obstacleBottom = document.createElement("div");
+
+    let gap = 150;
+    let height = Math.random()*300;
+
+    obstacleTop.classList.add("obstacle");
+    obstacleBottom.classList.add("obstacle");
+
+    obstacleTop.style.height = height + "px";
+    obstacleTop.style.top = "0px";
+
+    obstacleBottom.style.height = (window.innerHeight - height - gap) + "px";
+    obstacleBottom.style.bottom = "0px";
+
+    game.appendChild(obstacleTop);
+    game.appendChild(obstacleBottom);
+
+    let x = window.innerWidth;
+
+    let move = setInterval(()=>{
+        x -= 5;
+        obstacleTop.style.right = (window.innerWidth - x) + "px";
+        obstacleBottom.style.right = (window.innerWidth - x) + "px";
+
+        if(x < -50){
+            obstacleTop.remove();
+            obstacleBottom.remove();
+            clearInterval(move);
+            score++;
+            console.log("Score:", score);
+        }
+
+        // collision
+        if(
+            x < 90 && x > 40 &&
+            (y < height || y > height + gap)
+        ){
+            alert("Game Over! Score: " + score);
+            location.reload();
+        }
+
+    },30);
+}
+
+setInterval(createObstacle,2000);
+
+function gameLoop(){
+    velocity += gravity;
+    y += velocity;
+
+    if(y < 0) y = 0;
+    if(y > window.innerHeight-40){
+        alert("Game Over! Score: " + score);
+        location.reload();
+    }
+
+    player.style.top = y + "px";
+
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+
+</body>
+</html>
